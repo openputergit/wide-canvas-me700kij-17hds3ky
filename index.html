@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeServ - Household Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .chat-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="app" class="min-h-screen">
+        <!-- Login Page -->
+        <div id="loginPage" class="container mx-auto px-4 py-8">
+            <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
+                <h1 class="text-2xl font-bold text-center mb-6">HomeServ Login</h1>
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="loginEmail" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" id="loginPassword" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">Login</button>
+                </form>
+                <p class="mt-4 text-center">
+                    <a href="#" onclick="showRegister()" class="text-blue-600 hover:underline">New user? Register here</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Register Page -->
+        <div id="registerPage" class="container mx-auto px-4 py-8 hidden">
+            <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
+                <h1 class="text-2xl font-bold text-center mb-6">Register</h1>
+                <form id="registerForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Name</label>
+                        <input type="text" id="registerName" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="registerEmail" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" id="registerPassword" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">Register</button>
+                </form>
+                <p class="mt-4 text-center">
+                    <a href="#" onclick="showLogin()" class="text-blue-600 hover:underline">Already have an account? Login</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Services Page -->
+        <div id="servicesPage" class="container mx-auto px-4 py-8 hidden">
+            <h1 class="text-2xl font-bold text-center mb-6">Available Services</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Service cards will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Service Provider Details Modal -->
+        <div id="providerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+            <div class="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+                <h2 class="text-xl font-bold mb-4">Service Provider Details</h2>
+                <div id="providerDetails"></div>
+                <div class="mt-4">
+                    <h3 class="font-bold mb-2">Chat with Provider</h3>
+                    <div class="chat-container border rounded p-3 mb-3" id="chatMessages"></div>
+                    <div class="flex gap-2">
+                        <input type="text" id="messageInput" class="flex-1 border rounded px-2 py-1">
+                        <button onclick="sendMessage()" class="bg-blue-600 text-white px-4 py-1 rounded">Send</button>
+                    </div>
+                </div>
+                <button onclick="closeProviderModal()" class="mt-4 w-full bg-gray-200 text-gray-800 py-2 rounded">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        const services = [
+            { id: 1, name: 'Plumbing', icon: 'bi-wrench' },
+            { id: 2, name: 'Electrical', icon: 'bi-lightning-charge' },
+            { id: 3, name: 'Cleaning', icon: 'bi-brush' },
+            { id: 4, name: 'Carpentry', icon: 'bi-hammer' },
+            { id: 5, name: 'Painting', icon: 'bi-paint-bucket' },
+            { id: 6, name: 'Gardening', icon: 'bi-flower1' }
+        ];
+
+        const serviceProviders = [
+            { id: 1, name: 'John Doe', service: 'Plumbing', rating: 4.5, reviews: 28 },
+            { id: 2, name: 'Jane Smith', service: 'Plumbing', rating: 4.8, reviews: 45 },
+            { id: 3, name: 'Bob Wilson', service: 'Electrical', rating: 4.2, reviews: 15 }
+        ];
+
+        // Navigation functions
+        function showLogin() {
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('registerPage').classList.add('hidden');
+            document.getElementById('servicesPage').classList.add('hidden');
+        }
+
+        function showRegister() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('registerPage').classList.remove('hidden');
+            document.getElementById('servicesPage').classList.add('hidden');
+        }
+
+        function showServices() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('registerPage').classList.add('hidden');
+            document.getElementById('servicesPage').classList.remove('hidden');
+            renderServices();
+        }
+
+        // Render services
+        function renderServices() {
+            const servicesContainer = document.querySelector('#servicesPage > div');
+            servicesContainer.innerHTML = services.map(service => `
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer" onclick="showProviders('${service.name}')">
+                    <i class="bi ${service.icon} text-4xl text-blue-600"></i>
+                    <h2 class="text-xl font-semibold mt-4">${service.name}</h2>
+                    <p class="text-gray-600 mt-2">Click to view providers</p>
+                </div>
+            `).join('');
+        }
+
+        // Show service providers
+        function showProviders(serviceName) {
+            const providers = serviceProviders.filter(provider => provider.service === serviceName);
+            const providerModal = document.getElementById('providerModal');
+            const providerDetails = document.getElementById('providerDetails');
+            
+            providerDetails.innerHTML = providers.map(provider => `
+                <div class="border-b pb-4 mb-4">
+                    <h3 class="font-bold">${provider.name}</h3>
+                    <div class="flex items-center mt-2">
+                        <div class="text-yellow-400">
+                            ${'★'.repeat(Math.floor(provider.rating))}${provider.rating % 1 ? '½' : ''}
+                        </div>
+                        <span class="ml-2 text-gray-600">(${provider.reviews} reviews)</span>
+                    </div>
+                    <button onclick="selectProvider(${provider.id})" class="mt-2 bg-blue-600 text-white px-4 py-1 rounded">Select</button>
+                </div>
+            `).join('');
+
+            providerModal.classList.remove('hidden');
+        }
+
+        function closeProviderModal() {
+            document.getElementById('providerModal').classList.add('hidden');
+        }
+
+        let selectedProviderId = null;
+
+        function selectProvider(providerId) {
+            selectedProviderId = providerId;
+            document.getElementById('chatMessages').innerHTML = '';
+            // You could add more functionality here
+        }
+
+        function sendMessage() {
+            if (!selectedProviderId) return;
+            
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (message) {
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML += `
+                    <div class="mb-2">
+                        <div class="bg-blue-100 p-2 rounded-lg inline-block">
+                            ${message}
+                        </div>
+                    </div>
+                `;
+                messageInput.value = '';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // Form submissions
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showServices();
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showServices();
+        });
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
